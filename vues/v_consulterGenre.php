@@ -7,7 +7,7 @@
                             <div id="breadcrumb">
                                 <a href="index.php?uc=gererGenres&action=ajouterGenre">Ajouter</a>&nbsp;
                                 <a href="index.php?uc=gererGenres&action=modifierGenre&id=<?php echo $leGenre->getCode() ?>">Modifier</a>&nbsp;
-                                <a href="index.php?uc=gererGenres&action=supprimerGenre?id=<?php echo $leGenre->getCode() ?>">Supprimer</a>
+                                <a href="index.php?uc=gererGenres&action=supprimerGenre&id=<?php echo $leGenre->getCode() ?>">Supprimer</a>
                             </div>
                             <table>
                                 <tr>
