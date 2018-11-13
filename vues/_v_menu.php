@@ -8,17 +8,17 @@
                     </a>
                 </li>
                 <li class="smenu">
-                    <a href="index.php?uc=gererOuvrages.php" 
+                    <a href="index.php?uc=gererOuvrages" 
                        title="Ouvrages">Gestion des ouvrages
                     </a>
                 </li>
                 <li class="smenu">
-                    <a href="index.php?uc=gererGenres.php" 
+                    <a href="index.php?uc=gererGenres" 
                        title="Genres">Gestion des genres
                     </a>
                 </li>
                 <li class="smenu">
-                    <a href="index.php?uc=gererAuteurs.php" 
+                    <a href="index.php?uc=gererAuteurs" 
                        title="Auteurs">Gestion des auteurs
                     </a>
                 </li>
