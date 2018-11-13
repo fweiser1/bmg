@@ -15,9 +15,10 @@ else
 $msg = ''; //message passé à la vue v_afficherMessage
 $lien = ''; //message passé à la vue v_afficherErreurs
 
-// initialisation des variables
-$strCode = '';
-$strLibelle = ''; 
+$tabErreurs = array();
+$hasErrors = false;
+$titrePage = 'Gestion des Genres';
+
                     
 switch ($action) 
 {
@@ -29,11 +30,38 @@ switch ($action)
     }
     break;
     case 'consulterGenre' : 
-    {        
+    {       
+        if (isset($_GET["id"])){
+            $strCode = strtoupper(htmlentities($_GET["id"]));
+            // appel de la methode du modèle
+            $leGenre = GenreDal::loadGenreByID($strCode);
+            if ($leGenre == NULL)
+            {
+                $tabErreurs[] = 'Ce genre n\'existe pas ! ';
+                $hasErrors = true;
+            }
+        }
+        else  
+        {
+            $tabErreurs[] = "Aucun genre n'a été transmis pour consultation !";
+            $hasErrors = true;
+        }
+        
+        if ($hasErrors)
+        {
+            include 'vues/_v_afficherErreurs.php';
+        }
+        else
+        {
+            include 'vues/v_consulterGenre.php';
+        }
     }
     break;
     case 'ajouterGenre' : 
     {        
+        // initialisation des variables
+                $strCode = '';
+                $strLibelle = '';
         // traitement de l'option : saisie ou validation ?
             if (isset($_GET["option"])) {
                 $option = htmlentities($_GET["option"]);
@@ -46,7 +74,7 @@ switch ($action)
                 include 'vues/v_ajouterGenre.php';
             } break;
             case 'validerGenre' : 
-            {                  
+            {             
                     // tests de gestion du formulaire
                     if (isset($_POST["cmdValider"])) {
                         // récupération du libellé
@@ -64,30 +92,32 @@ switch ($action)
                             $doublon = GenreDal::loadGenreByID($strCode);
                             if ($doublon != NULL) 
                             {
-                                $tabErreurs["Erreur"] = 'Il existe déjà un genre avec ce code !';
+                                $tabErreurs[] = 'Il existe déjà un genre avec ce code !';
                                 $hasErrors = true;  
                             }
-                             else {
+                        }
+                             else 
+                             {
                                 // une ou plusieurs valeurs n'ont pas été saisies
                                 if (empty($strCode)) {                                
-                                    $tabErreurs["Code"] = "Le code doit être renseigné !";
+                                    $tabErreurs[] = "Le code doit être renseigné !";
                                 }
                                 if (empty($strLibelle)) {
-                                    $tabErreurs["Libellé"] = "Le libellé doit être renseigné !";
+                                    $tabErreurs[] = "Le libellé doit être renseigné !";$hasErrors = true;
                                 }
                                 $hasErrors = true;
                              }
-                             if(!$hasErrros)
+                             if(!$hasErrors)
                              {
-                                 $code = GenreDal::addGenre($strCode,$strLibelle);
-                                 if($code != NULL)
+                                 $res = GenreDal::addGenre($strCode,$strLibelle);
+                                 if($res > 0)
                                      {
                                         $msg = '<span class="info">Le genre '
                                         .$strCode.'-'
                                         .$strLibelle.' a été ajouté</span>';
-                                        include 'vues/v_afficherMessage.php';
+                                        include 'vues/_v_afficherMessage.php';
                                         // include 'vues/v_consulterGenre.php'';
-                                     
+                                        // $leGenre = new Genre($strCode, $strLibelle);
                                      }
                                      else 
                                      {
@@ -98,13 +128,10 @@ switch ($action)
                              if($hasErrors)
                                  {
                                     $msg = "L'operation d'ajout n'a pas pu être menée a terme en raison des erreurs suivantes : ";
-                                    $lien='<a href="index.php?uc=c_gererGenres&action=ajouterGenre">Retours a la saisie</a>';
+                                    $lien='<a href="index.php?uc=gererGenres&action=ajouterGenre">Retour à la saisie</a>';
                                     include 'vues\_v_afficherErreurs.php';
                                  }
-                        }
-                        
-                        
-                        
+                                 
             } break;
         }
         }
