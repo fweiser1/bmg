@@ -1,39 +1,35 @@
 <?php
+
 // solicite les services de la classe PdoDao
 require_once ('PdoDao.class.php');
 
-class GenreDal 
-{
+class GenreDal {
+
     /**
      * charge un tableau de genres
      * @param $style : 0 === tableau assoc, 1 == objet
      * @return un objet de la classe PDOStatement
      */
-    public static function loadGenres($style)
-    { // instanciation d'un objet PdoDao
+    public static function loadGenres($style) { // instanciation d'un objet PdoDao
         $cnx = new PdoDao();
         $qry = 'Select * from genre';
         $tab = $cnx->getRows($qry, array(), $style);
-        if (is_a($tab,'PDOException'))
-        {
+        if (is_a($tab, 'PDOException')) {
             return PDO_EXCEPTION_VALUE;
         } // dans le cas où on attend un tableau d'objets
-        if($style == 1)
-        { // retourner un tableau d'objets
+        if ($style == 1) { // retourner un tableau d'objets
             $res = array();
-            foreach ($tab as $ligne)
-            {
+            foreach ($tab as $ligne) {
                 $unGenre = new Genre(
-                    $ligne->code_genre,
-                    $ligne->lib_genre
-                    );
-            array_push($res, $unGenre); // identique à $res[] = $unGenre;
+                        $ligne->code_genre, $ligne->lib_genre
+                );
+                array_push($res, $unGenre); // identique à $res[] = $unGenre;
             }
             return $res;
         }
         return $tab;
     }
-    
+
     /**
      * ajoute un genre
      * @param   string  $code : le code du genre à ajouter
@@ -54,7 +50,6 @@ class GenreDal
         return $res;
     }
 
-    
     /**
      * charge un objet de la classe Genre à partir de son code
      * @param  $id : le code du genre
@@ -77,36 +72,47 @@ class GenreDal
             return NULL;
         }
     }
-    
+
     /**
-    * calcule le nombre d'ouvrages pour un genre
-    * @param type $code : le code du genre
-    * @return le nombre d'ouvrages du genre
-    */ 
-    public static function countOuvragesGenre($code){
+     * calcule le nombre d'ouvrages pour un genre
+     * @param type $code : le code du genre
+     * @return le nombre d'ouvrages du genre
+     */
+    public static function countOuvragesGenre($code) {
         $cnx = new PdoDao();
         $qry = 'SELECT COUNT(*) FROM ouvrage WHERE code_genre = ?';
-        $res = $cnx->getValue($qry,array($code));
-        if (is_a($res,'PDOException')) {
-            return PDO_EXCEPTION_VALUE;
-        }
-        return $res;
-    }
-    
-    /**
-     * supprime un genre
-     * @param   int $code : le code du genre à supprimer
-     * @return le nombre de lignes affectées
-    */      
-    public static function delGenre($code) {
-        $cnx = new PdoDao();
-        $qry = 'DELETE FROM genre WHERE code_genre = ?';
-        $res = $cnx->execSQL($qry,array($code));
-        if (is_a($res,'PDOException')) {
+        $res = $cnx->getValue($qry, array($code));
+        if (is_a($res, 'PDOException')) {
             return PDO_EXCEPTION_VALUE;
         }
         return $res;
     }
 
-    
+    /**
+     * supprime un genre
+     * @param   int $code : le code du genre à supprimer
+     * @return le nombre de lignes affectées
+     */
+    public static function delGenre($code) {
+        $cnx = new PdoDao();
+        $qry = 'DELETE FROM genre WHERE code_genre = ?';
+        $res = $cnx->execSQL($qry, array($code));
+        if (is_a($res, 'PDOException')) {
+            return PDO_EXCEPTION_VALUE;
+        }
+        return $res;
+    }
+
+    public static function setGenre($unGenre) {
+        $cnx = new PdoDao();
+        $qry = 'UPDATE genre SET lib_genre = ? WHERE code_genre = ?';
+        $res = $cnx->execSQL($qry, array(
+            $unGenre->getLibelle(),
+            $unGenre->getCode()));
+        if (is_a($res, 'PDOException')) {
+            return PDO_EXCEPTION_VALUE;
+        }
+        return $res;
+    }
+
 }
